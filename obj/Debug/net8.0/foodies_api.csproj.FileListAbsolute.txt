@@ -1,0 +1,7 @@
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.GeneratedMSBuildEditorConfig.editorconfig
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.AssemblyInfoInputs.cache
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.AssemblyInfo.cs
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.csproj.CoreCompileInputs.cache
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.MvcApplicationPartsAssemblyInfo.cache
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.sourcelink.json
+/home/kaycee/repos/foodies/foodies_api/obj/Debug/net8.0/foodies_api.csproj.AssemblyReference.cache
