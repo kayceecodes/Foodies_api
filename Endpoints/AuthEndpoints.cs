@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using foodies_api.Models.Dtos;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,9 +10,6 @@ namespace foodies_api.Endpoints;
 
 public static class AuthEndpoints
 {
-    // private readonly RoleManager<IdentityRole> _roleManager;
-    // private readonly IConfiguration _configuration;
-
     public static void ConfigurationAuthEndpoints(this WebApplication app) 
     {
         app.MapPost("/api/login", Login).WithName("Login").Accepts<LoginDto>("application/json")
@@ -45,11 +43,45 @@ public static class AuthEndpoints
             var token = GetToken(authClaims);
             return Results.Ok(new
                 {
-                    toke = new JwtSecurityTokenHandler().WriteToken(token),
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo
                 });
         }
         return Results.Unauthorized();
+    }
+
+    public async static Task<IResult> Register([FromBody] RegistrationDto registerDto, UserManager<IdentityUser> _userManager)
+    {
+        var userExists = await _userManager.FindByNameAsync(registerDto.Username);
+        if (userExists != null)
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+
+        IdentityUser user = new()
+        {
+            Email = registerDto.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = registerDto.Username
+        };
+        var result = await _userManager.CreateAsync(user, registerDto.Password);
+        if (!result.Succeeded)
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+
+        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+    }
+
+    private static JwtSecurityToken GetToken(List<Claim> authClaims)
+    {
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["JWT:ValidIssuer"],
+            audience: _configuration["JWT:ValidAudience"],
+            expires: DateTime.Now.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+
+        return token;
     }
 }
  

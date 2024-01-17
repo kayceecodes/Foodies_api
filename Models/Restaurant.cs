@@ -5,11 +5,10 @@ namespace foodies_api;
 
 public class Restaurant
 {
-    [Required]
-    public string Name { get; set;}
+    public int Id { get; set; }
 
-    [Required]
-    public List<Address> Addresses { get; set; }
+    public string Name { get; set; }
 
+    public List<Branches> Branches { get; set; } = new List<Branches>();
     public int Rating { get; set; }
 }

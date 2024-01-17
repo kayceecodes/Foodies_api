@@ -39,11 +39,22 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 var app = builder.Build();
 
+app.UseHttpsRedirection();
 
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy(name: MyAllowSpecificOrigins,
+//                       policy  =>
+//                       {
+//                           policy.WithOrigins("http://example.com",
+//                                               "http://www.contoso.com");
+//                       });
+// });
 
-app.MapGet("/", () => "Hello World!");
+// Authentication & Authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
