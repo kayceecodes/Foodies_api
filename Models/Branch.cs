@@ -1,6 +1,6 @@
 ﻿namespace foodies_api;
 
-    public class Branches
+    public class Branch
     {
         public int Id { get; set; }
     

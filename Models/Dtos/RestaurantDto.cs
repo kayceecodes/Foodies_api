@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using foodies_api.Models;
+﻿using foodies_api.Models;
 
 namespace foodies_api;
 
-public class Restaurant
+public class RestaurantDto
 {
     public int Id { get; set; }
 
