@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var httpContextAccessor = new HttpContextAccessor();
+var context = httpContextAccessor.HttpContext;
+
 ConfigurationManager configuration = builder.Configuration;
 
 
@@ -22,23 +25,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Configure the HTTP client and register the typed client
-builder.Services.AddHttpClient<IExternalApiClient, ExternalApiClient>(client =>
+builder.Services.AddHttpClient<IYelpApiClient, YelpApiClient>(client =>
 {
     client.BaseAddress = new Uri("https://api.yelp.com/v3");
-
-});
-
-// Register the API endpoint
-builder.Services.AddEndpointsApiExplorer(endpoints =>
-{
-    endpoints.Map("/", async context =>
-    {
-        // Use the typed HTTP client to make a request
-        var externalApiClient = context.RequestServices.GetRequiredService<IExternalApiClient>();
-        string data = await externalApiClient.GetData();
-
-        await context.Response.WriteAsync(data);
-    });
 });
 
 // Adding Authentication
@@ -86,6 +75,6 @@ app.UseAuthorization();
 app.MapGroup("restaurant").AddEndpointFilter<ApiKeyEndpointFilter>();
 
 app.ConfigurationAuthEndpoints();
-app.ConfigurationRestaurantEndpoints();
+app.ConfigurationRestaurantEndpoints(context);
 
 app.Run();
