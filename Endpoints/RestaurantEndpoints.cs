@@ -19,7 +19,7 @@ public static class RestaurantEndpoints
         //     .Produces<APIResponse>(StatusCodes.Status200OK)
         //     .Produces(StatusCodes.Status400BadRequest);
 
-        app.MapGet("/api/restaurant", async context =>
+        app.MapGet("/api/restaurant/{id}", async (HttpContext context, int id) =>
         {
             // Use the typed HTTP client to make a request
             var YelpApiClient = context.RequestServices.GetRequiredService<IYelpApiClient>();
