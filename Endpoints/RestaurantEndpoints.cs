@@ -14,14 +14,14 @@ public static class RestaurantEndpoints
     public static void ConfigurationRestaurantEndpoints(this WebApplication app, HttpContext context) 
     {
 
-        app.MapGet("/api/restaurant", GetRestaurant
-        ).WithName("Restaurant").Accepts<RestaurantDto>("application/json")
-            .Produces<APIResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest);
+        // app.MapGet("/api/restaurant", GetRestaurant
+        // ).WithName("Restaurant").Accepts<RestaurantDto>("application/json")
+        //     .Produces<APIResponse>(StatusCodes.Status200OK)
+        //     .Produces(StatusCodes.Status400BadRequest);
 
         app.MapGet("/api/restaurant", async context =>
         {
- // Use the typed HTTP client to make a request
+            // Use the typed HTTP client to make a request
             var YelpApiClient = context.RequestServices.GetRequiredService<IYelpApiClient>();
             ApiResult<string> result = await YelpApiClient.GetBusiness();
 

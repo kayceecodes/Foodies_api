@@ -17,14 +17,14 @@ public class ApiKeyEndpointFilter : IEndpointFilter
     )
     {
         if (!context.HttpContext.Request.Headers
-            .TryGetValue(AuthConstants.ApiKeyHeaderName,
+            .TryGetValue(AuthConstants.YelpApiKeyName,
             out var extractedApiKey))
         {
             return new UnauthorizedHttpObjectResult("API Key Missing");
             // return TypedResults.Unauthorized();
         }
 
-        var apiKey = _configuration.GetValue<string>(AuthConstants.ApiKeyHeaderName);
+        var apiKey = _configuration.GetValue<string>(AuthConstants.YelpApiKeyName);
         if(apiKey.Equals(extractedApiKey))
         {
             return new UnauthorizedHttpObjectResult("Invalid API Key");

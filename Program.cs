@@ -16,8 +16,10 @@ var context = httpContextAccessor.HttpContext;
 ConfigurationManager configuration = builder.Configuration;
 
 
+builder.Services.AddSingleton(configuration.GetSection("Authentication:YelpApiKey")); // Replace with your actual configuration
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
 // For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
