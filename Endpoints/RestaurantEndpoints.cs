@@ -11,19 +11,12 @@ namespace foodies_api.Endpoints;
 
 public static class RestaurantEndpoints
 {
-    public static void ConfigurationRestaurantEndpoints(this WebApplication app, HttpContext context) 
+    public static void ConfigurationRestaurantEndpoints(this WebApplication app) 
     {
-
-        // app.MapGet("/api/restaurant", GetRestaurant
-        // ).WithName("Restaurant").Accepts<RestaurantDto>("application/json")
-        //     .Produces<APIResponse>(StatusCodes.Status200OK)
-        //     .Produces(StatusCodes.Status400BadRequest);
-
-        app.MapGet("/api/restaurant/{id}", async (HttpContext context, int id) =>
+        app.MapGet("/api/restaurant/{id}", async (HttpContext context, string id) =>
         {
-            // Use the typed HTTP client to make a request
-            var YelpApiClient = context.RequestServices.GetRequiredService<IYelpApiClient>();
-            ApiResult<string> result = await YelpApiClient.GetBusiness();
+            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+            ApiResult<string> result = await YelpApiClient.GetBusiness(id);
 
             if (result.IsSuccessStatusCode)
             {

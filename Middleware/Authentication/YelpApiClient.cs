@@ -3,7 +3,7 @@
 namespace foodies_api;
 
 interface IYelpApiClient {
-    Task<ApiResult<string>> GetBusiness();
+    Task<ApiResult<string>> GetBusiness(string id);
 }
 public class ApiResult<T>
 {
@@ -14,25 +14,24 @@ public class ApiResult<T>
 }
 public class YelpApiClient : IYelpApiClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _accessToken;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration; 
 
-    public YelpApiClient(HttpClient httpClient, string accessToken)
+    public YelpApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
-        _httpClient = httpClient;
-        _accessToken = accessToken;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
     }
 
-    public async Task<ApiResult<string>> GetBusiness()
+    public async Task<ApiResult<string>> GetBusiness(string id)
     {
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
-        var Id = "ifEkf8JxP3RCBeszcIGLww";
-
+        var token = _configuration.GetValue<string>(AuthConstants.YelpApiKeyName);
+        using var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         try
         {
             // Make a GET request to Yelp Fusion API
-            HttpResponseMessage response = await _httpClient.GetAsync($"/businesses/{Id}");
-            // HttpResponseMessage response = await _httpClient.GetAsync($"https://api.yelp.com/v3/businesses/{Id}");
+            HttpResponseMessage response = await httpClient.GetAsync($"/businesses/{id}");
 
             return new ApiResult<string>
             {
@@ -52,5 +51,6 @@ public class YelpApiClient : IYelpApiClient
                 ErrorMessage = $"Exception: {ex.Message}"
             };
         }
+
     }
 }

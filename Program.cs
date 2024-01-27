@@ -15,8 +15,25 @@ var context = httpContextAccessor.HttpContext;
 
 ConfigurationManager configuration = builder.Configuration;
 
+// // Configure the HTTP client and register the typed client
+// builder.Services.AddHttpClient<IYelpApiClient, YelpApiClient>(client =>
+// {
+//     client.BaseAddress = new Uri("https://api.yelp.com/v3");
+// });
 
-builder.Services.AddSingleton(configuration.GetSection("Authentication:YelpApiKey")); // Replace with your actual configuration
+// Configure services
+builder.Services.AddHttpClient("YelpApiClient", client => 
+{
+    client.BaseAddress = new Uri("https://api.yelp.com/v3");    
+});
+
+// Load configuration from appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json");
+
+// Add YelpApiClient as a singleton with configuration
+builder.Services.AddSingleton<YelpApiClient>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
@@ -26,11 +43,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Configure the HTTP client and register the typed client
-builder.Services.AddHttpClient<IYelpApiClient, YelpApiClient>(client =>
-{
-    client.BaseAddress = new Uri("https://api.yelp.com/v3");
-});
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
@@ -77,6 +89,6 @@ app.UseAuthorization();
 app.MapGroup("restaurant").AddEndpointFilter<ApiKeyEndpointFilter>();
 
 app.ConfigurationAuthEndpoints();
-app.ConfigurationRestaurantEndpoints(context);
+app.ConfigurationRestaurantEndpoints();
 
 app.Run();
