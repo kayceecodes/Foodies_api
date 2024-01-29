@@ -25,13 +25,15 @@ public class YelpApiClient : IYelpApiClient
 
     public async Task<ApiResult<string>> GetBusiness(string id)
     {
-        var token = _configuration.GetValue<string>(AuthConstants.YelpApiKeyName);
-        using var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
+        var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
+        var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
+        string url = httpClient.BaseAddress + $"/businesses/{id}";
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
         try
         {
             // Make a GET request to Yelp Fusion API
-            HttpResponseMessage response = await httpClient.GetAsync($"/businesses/{id}");
+            HttpResponseMessage response = await httpClient.GetAsync(url);
 
             return new ApiResult<string>
             {
@@ -51,6 +53,5 @@ public class YelpApiClient : IYelpApiClient
                 ErrorMessage = $"Exception: {ex.Message}"
             };
         }
-
     }
 }

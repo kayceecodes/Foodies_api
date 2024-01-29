@@ -13,27 +13,38 @@ public static class RestaurantEndpoints
 {
     public static void ConfigurationRestaurantEndpoints(this WebApplication app) 
     {
-        app.MapGet("/api/restaurant/{id}", async (HttpContext context, string id) =>
-        {
-            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-            ApiResult<string> result = await YelpApiClient.GetBusiness(id);
+        // app.MapGet("/api/restaurant/{id}", async (HttpContext context, string id) =>
+        // {
+        //     var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+        //     ApiResult<string> result = await YelpApiClient.GetBusiness(id);
 
-            if (result.IsSuccessStatusCode)
-            {
-                await context.Response.WriteAsync($"Success: {result.Data}");
-            }
-            else
-            {
-                context.Response.StatusCode = result.StatusCode ?? 500; // Default to Internal Server Error
-                await context.Response.WriteAsync($"Error: {result.ErrorMessage}");
-            }
-        });
-    }
+        //     if (result.IsSuccessStatusCode)
+        //     {
+        //         await context.Response.WriteAsync($"Success: {result.Data}");
+        //     }
+        //     else
+        //     {
+        //         context.Response.StatusCode = result.StatusCode ?? 500; // Default to Internal Server Error
+        //         await context.Response.WriteAsync($"Error: {result.ErrorMessage}");
+        //     }
+        // });
+        app.MapPost("/api/restaurant/{id}", GetRestaurant).WithName("GetRestaurantById").Accepts<RestaurantDto>("application/json")
+        .Produces<APIResponse>(200).Produces(400);    }
 
-    public static async Task<IResult> GetRestaurant()
+    public static async Task<IResult> GetRestaurant(WebApplication app, HttpContext context, string id)
     {
- 
-        return Results.Ok();
+        var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+        ApiResult<string> result = await YelpApiClient.GetBusiness(id);
+
+        if (result.IsSuccessStatusCode)
+        {
+            // await context.Response.WriteAsync($"Success: {result.Data}");
+            return Results.Ok($"Success: {result.Data}");
+        }
+        else
+        {
+            return Results.Ok($"Error: {result.ErrorMessage}");
+        }
     }
 }
  

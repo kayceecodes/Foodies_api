@@ -24,7 +24,7 @@ ConfigurationManager configuration = builder.Configuration;
 // Configure services
 builder.Services.AddHttpClient("YelpApiClient", client => 
 {
-    client.BaseAddress = new Uri("https://api.yelp.com/v3");    
+    client.BaseAddress = new Uri(configuration.GetValue<string>(YelpConstants.BaseAddress));    
 });
 
 // Load configuration from appsettings.json
@@ -86,7 +86,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGroup("restaurant").AddEndpointFilter<ApiKeyEndpointFilter>();
+// app.MapGroup("Some Name - Auth Endpoints").AddEndpointFilter<ApiKeyEndpointFilter>();
 
 app.ConfigurationAuthEndpoints();
 app.ConfigurationRestaurantEndpoints();
