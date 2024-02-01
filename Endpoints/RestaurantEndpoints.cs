@@ -1,6 +1,8 @@
 ﻿using foodies_api.Models.Dtos;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -13,38 +15,47 @@ public static class RestaurantEndpoints
 {
     public static void ConfigurationRestaurantEndpoints(this WebApplication app) 
     {
-        // app.MapGet("/api/restaurant/{id}", async (HttpContext context, string id) =>
-        // {
-        //     var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-        //     ApiResult<string> result = await YelpApiClient.GetBusiness(id);
-
-        //     if (result.IsSuccessStatusCode)
-        //     {
-        //         await context.Response.WriteAsync($"Success: {result.Data}");
-        //     }
-        //     else
-        //     {
-        //         context.Response.StatusCode = result.StatusCode ?? 500; // Default to Internal Server Error
-        //         await context.Response.WriteAsync($"Error: {result.ErrorMessage}");
-        //     }
-        // });
-        app.MapPost("/api/restaurant/{id}", GetRestaurant).WithName("GetRestaurantById").Accepts<RestaurantDto>("application/json")
-        .Produces<APIResponse>(200).Produces(400);    }
-
-    public static async Task<IResult> GetRestaurant(WebApplication app, HttpContext context, string id)
-    {
-        var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-        ApiResult<string> result = await YelpApiClient.GetBusiness(id);
-
-        if (result.IsSuccessStatusCode)
+        app.MapGet("/api/restaurant/{id}", async Task<IResult> (HttpContext context, string id) =>
         {
-            // await context.Response.WriteAsync($"Success: {result.Data}");
-            return Results.Ok($"Success: {result.Data}");
-        }
-        else
+            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+            APIResult result = await YelpApiClient.GetBusinessById(id);
+
+            if (result.IsSuccess)
+                return TypedResults.Ok(result.Data);
+            else
+                return TypedResults.BadRequest();
+        
+        }).WithName("GetRestaurantById").Accepts<RestaurantDto>("application/json")
+        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status500InternalServerError);
+
+        app.MapGet("/api/restaurant/location/{location}", async Task<IResult> (HttpContext context, string location) =>
         {
-            return Results.Ok($"Error: {result.ErrorMessage}");
-        }
+            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+            APIResponse result = await YelpApiClient.GetBusinessesByLocation(location);
+
+            if (result.IsSuccess)
+                return TypedResults.Ok(result.Data);
+            else
+                return TypedResults.BadRequest();
+        
+        }).WithName("GetRestaurantByLocation").Accepts<List<RestaurantDto>>("application/json")
+        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status500InternalServerError);
+
+        app.MapGet("/api/restaurant/phone/{number}", async Task<IResult> (HttpContext context, string number) =>
+        {
+            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+            APIResponse result = await YelpApiClient.GetBusinessesByPhone(number);
+
+            if (result.IsSuccess)
+                return TypedResults.Ok(result.Data);
+            else
+                return TypedResults.BadRequest();
+        
+        }).WithName("GetRestaurantByPhone").Accepts<List<RestaurantDto>>("application/json")
+        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status500InternalServerError);
     }
 }
  

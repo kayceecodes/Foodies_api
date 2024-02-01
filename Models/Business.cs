@@ -26,6 +26,7 @@
  
     public class Business
     {
+        public string Id { get; set; }
         public string? Alias { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Image_url { get; set; }
@@ -33,7 +34,7 @@
         public string? Url { get; set; }
         public int Review_count { get; set; }
         public List<Category> Categories { get; set; } = null!;
-        public double rating { get; set; }
+        public double Rating { get; set; }
         public Coordinates? Coordinates { get; set; }
         public List<string>? Transactions { get; set; }
         public string? Price { get; set; }
