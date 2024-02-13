@@ -43,7 +43,8 @@ public static class RestaurantEndpoints
         .Produces<APIResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapGet("/api/restaurant/phone/{number}", async Task<IResult> (HttpContext context, string number) =>
+        // Grabs specifically one business, one
+        app.MapGet("/api/restaurant/search/{keywords}", async Task<IResult> (HttpContext context, KeywordsDto keywords) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
             APIResponse result = await YelpApiClient.GetBusinessesByPhone(number);
