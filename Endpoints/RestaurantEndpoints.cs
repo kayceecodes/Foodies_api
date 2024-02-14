@@ -42,11 +42,12 @@ public static class RestaurantEndpoints
         }).WithName("GetRestaurantByLocation").Accepts<List<RestaurantDto>>("application/json")
         .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
- 
-        app.MapGet("/api/restaurant/phone/{number}", async Task<IResult> (HttpContext context, string number) =>
+
+        // Uses Search object with propeerties used in Yelp's API
+        app.MapGet("/api/restaurant/search/{search}", async Task<IResult> (HttpContext context, [FromBody] SearchDto search) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-            APIResult result = await YelpApiClient.GetBusinessesByPhone(number);
+            APIResult result = await YelpApiClient.GetBusinesses(search);
 
             if (result.IsSuccess)
                 return TypedResults.Ok(result.Data);

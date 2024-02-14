@@ -108,4 +108,34 @@ public class YelpApiClient : IYelpApiClient
             };     
         } 
     }
+
+    public async Task<APIResult> GetBusinesses(SearchDto searchDto)
+    {
+        var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
+        var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
+        var terms = searchDto.Terms;// add split for terms
+        string url = httpClient.BaseAddress + $"/businesses/search?term={terms}&sort_by=best_match&limit=20&location={searchDto.Location}";
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        // Make a GET request to Yelp Fusion API
+        HttpResponseMessage result = await httpClient.GetAsync(url);
+        var businesses = JsonConvert.DeserializeObject<YelpResponse>(await result.Content.ReadAsStringAsync());
+
+        if(result.IsSuccessStatusCode)
+        {
+            return new APIResult() {
+                IsSuccess = result.IsSuccessStatusCode,
+                Data = businesses ?? new (),
+                // StatusCode = result.StatusCode
+            };
+        }        
+        else {
+            return new APIResult() {
+                IsSuccess = false,
+                Data = new object(),
+                StatusCode = result.StatusCode,
+                ErrorMessages = new () { result.ReasonPhrase }
+            };     
+        } 
+    }
 }
