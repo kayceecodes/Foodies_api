@@ -26,13 +26,13 @@ public static class RestaurantEndpoints
                 return TypedResults.BadRequest();
         
         }).WithName("GetRestaurantById").Accepts<RestaurantDto>("application/json")
-        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
         app.MapGet("/api/restaurant/location/{location}", async Task<IResult> (HttpContext context, string location) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-            APIResponse result = await YelpApiClient.GetBusinessesByLocation(location);
+            APIResult result = await YelpApiClient.GetBusinessesByLocation(location);
 
             if (result.IsSuccess)
                 return TypedResults.Ok(result.Data);
@@ -40,13 +40,13 @@ public static class RestaurantEndpoints
                 return TypedResults.BadRequest();
         
         }).WithName("GetRestaurantByLocation").Accepts<List<RestaurantDto>>("application/json")
-        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
-
+ 
         app.MapGet("/api/restaurant/phone/{number}", async Task<IResult> (HttpContext context, string number) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
-            APIResponse result = await YelpApiClient.GetBusinessesByPhone(number);
+            APIResult result = await YelpApiClient.GetBusinessesByPhone(number);
 
             if (result.IsSuccess)
                 return TypedResults.Ok(result.Data);
@@ -54,7 +54,7 @@ public static class RestaurantEndpoints
                 return TypedResults.BadRequest();
         
         }).WithName("GetRestaurantByPhone").Accepts<List<RestaurantDto>>("application/json")
-        .Produces<APIResponse>(StatusCodes.Status200OK)
+        .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
     }
 }

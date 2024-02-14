@@ -14,11 +14,11 @@ public static class AuthEndpoints
     public static void ConfigurationAuthEndpoints(this WebApplication app) 
     {
         app.MapPost("/api/login", Login).WithName("Login").Accepts<LoginDto>("application/json")
-            .Produces<APIResponse>(StatusCodes.Status200OK)
+            .Produces<APIResult>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
         app.MapPost("/api/register", Register).WithName("Register").Accepts<RegistrationDto>("application/json")
-            .Produces<APIResponse>(StatusCodes.Status200OK)
+            .Produces<APIResult>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
     }
 
@@ -65,7 +65,7 @@ public static class AuthEndpoints
 
         if (userExists)
             return Results.BadRequest(new 
-                APIResponse { 
+                APIResult { 
                     StatusCode = HttpStatusCode.Conflict, 
                     ErrorMessages = ["User already exists!"] 
                 });
@@ -80,13 +80,13 @@ public static class AuthEndpoints
         
         if (!result.Succeeded)
             return Results.BadRequest(new 
-            APIResponse { 
+            APIResult { 
                 StatusCode = HttpStatusCode.BadRequest, 
                 ErrorMessages = ["Could not create user!"] 
             });
 
         return Results.Ok(new 
-            APIResponse { 
+            APIResult { 
                 StatusCode = HttpStatusCode.OK, 
                 ErrorMessages = ["User created successfully!"] 
             });

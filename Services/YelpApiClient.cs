@@ -1,17 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using foodies_api.Models;
-using foodies_api.Models.Dtos;
-using System.Threading.Tasks;
 
 namespace foodies_api;
 
 interface IYelpApiClient {
     Task<APIResult> GetBusinessById(string id);
-    Task<APIResponse> GetBusinessesByLocation(string location);
-    Task<APIResponse> GetBusinessesByPhone(string phonenumber);
+    Task<APIResult> GetBusinessesByLocation(string location);
+    Task<APIResult> GetBusinessesByPhone(string phonenumber);
 }
 
 public class YelpApiClient : IYelpApiClient
@@ -55,7 +51,7 @@ public class YelpApiClient : IYelpApiClient
         } 
     }
         
-    public async Task<APIResponse> GetBusinessesByLocation(string location)
+    public async Task<APIResult> GetBusinessesByLocation(string location)
     {
         var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
         var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
@@ -68,14 +64,14 @@ public class YelpApiClient : IYelpApiClient
 
         if(result.IsSuccessStatusCode)
         {
-            return new APIResponse() {
+            return new APIResult() {
                 IsSuccess = result.IsSuccessStatusCode,
                 Data = businesses ?? new (),
                 // StatusCode = result.StatusCode
             };
         }        
         else {
-            return new APIResponse() {
+            return new APIResult() {
                 IsSuccess = false,
                 Data = new object(),
                 StatusCode = result.StatusCode,
@@ -84,7 +80,7 @@ public class YelpApiClient : IYelpApiClient
         } 
     }
 
-    public async Task<APIResponse> GetBusinessesByPhone(string number)
+    public async Task<APIResult> GetBusinessesByPhone(string number)
     {
         var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
         var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
@@ -97,14 +93,14 @@ public class YelpApiClient : IYelpApiClient
 
         if(result.IsSuccessStatusCode)
         {
-            return new APIResponse() {
+            return new APIResult() {
                 IsSuccess = result.IsSuccessStatusCode,
                 Data = businesses ?? new (),
                 // StatusCode = result.StatusCode
             };
         }        
         else {
-            return new APIResponse() {
+            return new APIResult() {
                 IsSuccess = false,
                 Data = new object(),
                 StatusCode = result.StatusCode,

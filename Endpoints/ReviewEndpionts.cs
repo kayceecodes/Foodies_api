@@ -1,4 +1,4 @@
-﻿namespace foodies_api;
+﻿namespace foodies_api.Endpoints;
 
 public static class ReviewEndpionts
 {
