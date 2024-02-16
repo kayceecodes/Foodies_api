@@ -2,6 +2,7 @@
 
 public class SearchDto
 {
+    public string Category { get; set; }
     public string Location { get; set; }
     public string Lat { get; set; }
     public string Long { get; set; }

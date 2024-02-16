@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using foodies_api.Models;
+using foodies_api.Models.Responses.Yelp;
 using Microsoft.IdentityModel.Tokens;
 
 namespace foodies_api;
@@ -49,7 +50,6 @@ public class YelpApiClient : IYelpApiClient
                 StatusCode = result.StatusCode,
                 ErrorMessages = new () { result.ReasonPhrase }
             };     
-
         } 
     }
         
@@ -57,7 +57,7 @@ public class YelpApiClient : IYelpApiClient
     {
         var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
         var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
-        string url = httpClient.BaseAddress + $"/businesses/search?categories=restaurant&sort_by=best_match&limit=20&location={location}";
+        string url = httpClient.BaseAddress + $"/businesses/search?term=restaurant&sort_by=best_match&limit=20&location={location}";
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         // Make a GET request to Yelp Fusion API
@@ -86,7 +86,7 @@ public class YelpApiClient : IYelpApiClient
     {
         var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
         var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
-        string url = httpClient.BaseAddress + $"/businesses/search/phone?sort_by=best_match&limit=20&phone={number}&categories=restaurant";
+        string url = httpClient.BaseAddress + $"/businesses/search/phone?sort_by=best_match&phone={number}";
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         // Make a GET request to Yelp Fusion API
@@ -124,7 +124,7 @@ public class YelpApiClient : IYelpApiClient
 
         string url = 
           httpClient.BaseAddress + $"/businesses/search?term={terms}&sort_by=best_match&limit={dto.Limit}" + 
-          "&location={dto.Location}&latitude={dto.Lat}&longitude={dto.Long}";
+          "&location={dto.Location}&latitude={dto.Lat}&longitude={dto.Long}&categories={dto.Category}";
         
         // Make a GET request to Yelp Fusion API
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
