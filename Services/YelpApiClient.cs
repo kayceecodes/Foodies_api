@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using foodies_api.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace foodies_api;
 
@@ -8,6 +9,7 @@ interface IYelpApiClient {
     Task<APIResult> GetBusinessById(string id);
     Task<APIResult> GetBusinessesByLocation(string location);
     Task<APIResult> GetBusinessesByPhone(string phonenumber);
+    Task<APIResult> GetBusinesses(SearchDto dto);
 }
 
 public class YelpApiClient : IYelpApiClient
@@ -109,15 +111,23 @@ public class YelpApiClient : IYelpApiClient
         } 
     }
 
-    public async Task<APIResult> GetBusinesses(SearchDto searchDto)
+    public async Task<APIResult> GetBusinesses(SearchDto dto)
     {
         var token = _configuration.GetValue<string>(YelpConstants.ApiKeySectionName);
         var httpClient = _httpClientFactory.CreateClient("YelpApiClient");
-        var terms = searchDto.Terms;// add split for terms
-        string url = httpClient.BaseAddress + $"/businesses/search?term={terms}&sort_by=best_match&limit=20&location={searchDto.Location}";
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+       
+        string terms = dto.Terms.Count > 0 ? string.Join(", ", dto.Terms) : "";// add split for terms
+        bool IsMissingLatLong = dto.Lat.IsNullOrEmpty() || dto.Long.IsNullOrEmpty();
+        
+        if(IsMissingLatLong && dto.Location.IsNullOrEmpty())
+            throw new NullReferenceException("There no value for Lat, Long, or Location");
+
+        string url = 
+          httpClient.BaseAddress + $"/businesses/search?term={terms}&sort_by=best_match&limit={dto.Limit}" + 
+          "&location={dto.Location}&latitude={dto.Lat}&longitude={dto.Long}";
         
         // Make a GET request to Yelp Fusion API
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         HttpResponseMessage result = await httpClient.GetAsync(url);
         var businesses = JsonConvert.DeserializeObject<YelpResponse>(await result.Content.ReadAsStringAsync());
 
