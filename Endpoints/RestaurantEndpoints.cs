@@ -42,9 +42,23 @@ public static class RestaurantEndpoints
         }).WithName("GetRestaurantByLocation").Accepts<List<RestaurantDto>>("application/json")
         .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
+        
+        app.MapGet("/api/restaurant/phone/{phonenumber}", async Task<IResult> (HttpContext context, string phonenumber) =>
+        {
+            var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
+            APIResult result = await YelpApiClient.GetBusinessByPhone(phonenumber);
+
+            if (result.IsSuccess)
+                return TypedResults.Ok(result.Data);
+            else
+                return TypedResults.BadRequest();
+        
+        }).WithName("GetRestaurantByPhone").Accepts<List<RestaurantDto>>("application/json")
+        .Produces<APIResult>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status500InternalServerError);
 
         // Uses Search object with propeerties used in Yelp's API
-        app.MapGet("/api/restaurant/search/{search}", async Task<IResult> (HttpContext context, [FromBody] SearchDto search) =>
+        app.MapPost("/api/restaurant/search/", async Task<IResult> (HttpContext context, SearchDto search) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
             APIResult result = await YelpApiClient.GetBusinesses(search);
@@ -54,7 +68,7 @@ public static class RestaurantEndpoints
             else
                 return TypedResults.BadRequest();
         
-        }).WithName("GetRestaurantByPhone").Accepts<List<RestaurantDto>>("application/json")
+        }).WithName("GetRestaurantsBySearchTerms").Accepts<SearchDto>("application/json")
         .Produces<APIResult>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
     }
