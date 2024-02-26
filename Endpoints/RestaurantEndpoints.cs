@@ -1,5 +1,5 @@
 ﻿using foodies_api.Models.Dtos;
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -58,7 +58,7 @@ public static class RestaurantEndpoints
         .Produces(StatusCodes.Status500InternalServerError);
 
         // Uses Search object with propeerties used in Yelp's API
-        app.MapPost("/api/restaurant/search/", async Task<IResult> (HttpContext context, SearchDto search) =>
+        app.MapPost("/api/restaurant/search/", async Task<IResult> (HttpContext context, [FromBody] SearchDto search) =>
         {
             var YelpApiClient = app.Services.GetRequiredService<YelpApiClient>();
             APIResult result = await YelpApiClient.GetBusinesses(search);

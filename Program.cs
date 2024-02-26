@@ -1,4 +1,3 @@
-
 using foodies_api;
 using foodies_api.Data;
 using foodies_api.Endpoints;
@@ -6,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,12 +12,6 @@ var httpContextAccessor = new HttpContextAccessor();
 var context = httpContextAccessor.HttpContext;
 
 ConfigurationManager configuration = builder.Configuration;
-
-// // Configure the HTTP client and register the typed client
-// builder.Services.AddHttpClient<IYelpApiClient, YelpApiClient>(client =>
-// {
-//     client.BaseAddress = new Uri("https://api.yelp.com/v3");
-// });
 
 // Configure services
 builder.Services.AddHttpClient("YelpApiClient", client => 
@@ -33,11 +25,11 @@ builder.Configuration.AddJsonFile("appsettings.json");
 // Add YelpApiClient as a singleton with configuration
 builder.Services.AddSingleton<YelpApiClient>();
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthorization();
+
 // For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -51,7 +43,6 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-
 
 // Adding Jwt Bearer
 .AddJwtBearer(options =>
@@ -90,5 +81,7 @@ app.UseAuthorization();
 
 app.ConfigurationAuthEndpoints();
 app.ConfigurationRestaurantEndpoints();
+app.ConfigurationReviewEndpoints();
 
 app.Run();
+    
